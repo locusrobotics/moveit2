@@ -228,14 +228,14 @@ def generate_move_group_launch(moveit_config):
     move_group_params = [
         moveit_config.to_dict(),
         move_group_configuration,
-        moveit_config.move_group_capabilities
+        moveit_config.move_group_capabilities,
     ]
 
     add_debuggable_node(
         ld,
         package="moveit_ros_move_group",
         executable="move_group",
-        commands_file=str(moveit_config.package_path  / "launch" / "gdb_settings.gdb"),
+        commands_file=str(moveit_config.package_path / "launch" / "gdb_settings.gdb"),
         output="screen",
         parameters=move_group_params,
         extra_debug_args=["--debug"],
@@ -278,7 +278,7 @@ def generate_demo_launch(moveit_config, launch_package_path=None):
     ld.add_action(DeclareBooleanLaunchArg("use_rviz", default_value=True))
     # If there are virtual joints, broadcast static tf by including virtual_joints launch
     virtual_joints_launch = (
-        launch_package_path  / "launch/static_virtual_joint_tfs.launch.py"
+        launch_package_path / "launch/static_virtual_joint_tfs.launch.py"
     )
 
     if virtual_joints_launch.exists():
@@ -300,7 +300,7 @@ def generate_demo_launch(moveit_config, launch_package_path=None):
     ld.add_action(
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
-                str(launch_package_path  / "launch/move_group.launch.py")
+                str(launch_package_path / "launch/move_group.launch.py")
             ),
         )
     )
@@ -309,7 +309,7 @@ def generate_demo_launch(moveit_config, launch_package_path=None):
     ld.add_action(
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
-                str(launch_package_path  / "launch/moveit_rviz.launch.py")
+                str(launch_package_path / "launch/moveit_rviz.launch.py")
             ),
             condition=IfCondition(LaunchConfiguration("use_rviz")),
         )
@@ -319,7 +319,7 @@ def generate_demo_launch(moveit_config, launch_package_path=None):
     ld.add_action(
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
-                str(launch_package_path  / "launch/warehouse_db.launch.py")
+                str(launch_package_path / "launch/warehouse_db.launch.py")
             ),
             condition=IfCondition(LaunchConfiguration("db")),
         )
