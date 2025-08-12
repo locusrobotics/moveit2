@@ -152,7 +152,7 @@ public:
       }
 
       // Check the joint against its bounds.
-      if (!start_state.satisfiesBounds(jmodel))
+      if (!start_state.satisfiesBounds(jmodel, params.start_state_max_bounds_error))
       {
         is_out_of_bounds |= true;
 
@@ -172,9 +172,9 @@ public:
         }
         RCLCPP_ERROR(logger_,
                      "Joint '%s' from the starting state is outside bounds by: [%s] should be in "
-                     "the range [%s], [%s].",
+                     "the range [%s], [%s] with 'start_state_max_bounds_error' [%f].",
                      jmodel->getName().c_str(), joint_values.str().c_str(), joint_bounds_low.str().c_str(),
-                     joint_bounds_hi.str().c_str());
+                     joint_bounds_hi.str().c_str(), params.start_state_max_bounds_error);
       }
     }
 
