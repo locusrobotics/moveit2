@@ -98,6 +98,7 @@ public:
 
     bool should_fix_state = false;
     bool is_out_of_bounds = false;
+    bool fix_bounds = params.start_state_max_bounds_error > std::numeric_limits<double>::epsilon();
     for (const moveit::core::JointModel* jmodel : jmodels)
     {
       // Check if we have a revolute, continuous joint. If we do, then we only need to make sure
@@ -154,7 +155,7 @@ public:
       // Check the joint against its bounds.
       if (!start_state.satisfiesBounds(jmodel))
       {
-        if (params.fix_start_state && start_state.satisfiesBounds(jmodel, params.start_state_max_bounds_error))
+        if (fix_bounds && start_state.satisfiesBounds(jmodel, params.start_state_max_bounds_error))
         {
           start_state.enforceBounds(jmodel);
           should_fix_state |= true;
@@ -181,7 +182,7 @@ public:
           }
           RCLCPP_ERROR(logger_,
                        "Joint '%s' from the starting state is outside bounds by: [%s] should be in "
-                       "the range [%s], [%s] with 'start_state_max_bounds_error' [%f].",
+                       "the range [%s], [%s] with start_state_max_bounds_error [%f].",
                        jmodel->getName().c_str(), joint_values.str().c_str(), joint_bounds_low.str().c_str(),
                        joint_bounds_hi.str().c_str(), params.start_state_max_bounds_error);
         }
@@ -192,13 +193,14 @@ public:
     auto status = moveit::core::MoveItErrorCode();
     status.source = getDescription();
     status.val = moveit_msgs::msg::MoveItErrorCodes::SUCCESS;
+    bool fix_allowed = params.fix_start_state || fix_bounds;
 
-    if (is_out_of_bounds || (!params.fix_start_state && should_fix_state))
+    if (is_out_of_bounds || (!fix_allowed && should_fix_state))
     {
       status.val = moveit_msgs::msg::MoveItErrorCodes::START_STATE_INVALID;
       status.message = std::string("Start state out of bounds.");
     }
-    else if (params.fix_start_state && should_fix_state)
+    else if (fix_allowed && should_fix_state)
     {
       constexpr auto msg_string = "Normalized start state.";
       status.message = msg_string;
