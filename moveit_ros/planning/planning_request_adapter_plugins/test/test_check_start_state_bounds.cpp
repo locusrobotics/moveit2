@@ -117,7 +117,7 @@ TEST_F(TestCheckStartStateBounds, TestWithinBoundMargins)
 
   const auto result2 = adapter_->adapt(planning_scene_, request);
   EXPECT_EQ(result2.val, moveit_msgs::msg::MoveItErrorCodes::SUCCESS);
-  EXPECT_EQ(result2.message, "");
+  EXPECT_EQ(result2.message, "Normalized start state.");
 }
 
 TEST_F(TestCheckStartStateBounds, TestRevoluteJointOutOfBounds)
