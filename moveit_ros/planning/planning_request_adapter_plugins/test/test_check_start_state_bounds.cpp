@@ -113,7 +113,7 @@ TEST_F(TestCheckStartStateBounds, TestWithinBoundMargins)
   EXPECT_EQ(result.message, "Start state out of bounds.");
 
   // Modify the start state. The adapter should succeed.
-  node_->set_parameter(rclcpp::Parameter("start_state_max_bounds_error", 2*margin));
+  node_->set_parameter(rclcpp::Parameter("start_state_max_bounds_error", 2 * margin));
 
   const auto result2 = adapter_->adapt(planning_scene_, request);
   EXPECT_EQ(result2.val, moveit_msgs::msg::MoveItErrorCodes::SUCCESS);
