@@ -102,7 +102,7 @@ TEST_F(TestCheckStartStateBounds, TestWithinBoundMargins)
     "r_elbow_flex_joint",   "r_wrist_flex_joint",    "r_wrist_roll_joint",
   };
 
-  double shoulder_plan_upper_limit = 0.714601836603;
+  double shoulder_plan_upper_limit = 0.564602;
   double margin = 0.0005;
   request.start_state.joint_state.position = {
     shoulder_plan_upper_limit + margin, 0.0, 0.0, 0.0, -0.5, -0.5, 0.0,
