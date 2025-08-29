@@ -93,6 +93,33 @@ TEST_F(TestCheckStartStateBounds, TestWithinBounds)
   EXPECT_EQ(result.message, "");
 }
 
+TEST_F(TestCheckStartStateBounds, TestWithinBoundMargins)
+{
+  planning_interface::MotionPlanRequest request;
+  request.group_name = "right_arm";
+  request.start_state.joint_state.name = {
+    "r_shoulder_pan_joint", "r_shoulder_lift_joint", "r_upper_arm_roll_joint", "r_forearm_roll_joint",
+    "r_elbow_flex_joint",   "r_wrist_flex_joint",    "r_wrist_roll_joint",
+  };
+
+  double shoulder_plan_upper_limit = 0.564602;
+  double margin = 0.0005;
+  request.start_state.joint_state.position = {
+    shoulder_plan_upper_limit + margin, 0.0, 0.0, 0.0, -0.5, -0.5, 0.0,
+  };
+
+  const auto result = adapter_->adapt(planning_scene_, request);
+  EXPECT_EQ(result.val, moveit_msgs::msg::MoveItErrorCodes::START_STATE_INVALID);
+  EXPECT_EQ(result.message, "Start state out of bounds.");
+
+  // Modify the start state. The adapter should succeed.
+  node_->set_parameter(rclcpp::Parameter("start_state_max_bounds_error", 2 * margin));
+
+  const auto result2 = adapter_->adapt(planning_scene_, request);
+  EXPECT_EQ(result2.val, moveit_msgs::msg::MoveItErrorCodes::SUCCESS);
+  EXPECT_EQ(result2.message, "Normalized start state.");
+}
+
 TEST_F(TestCheckStartStateBounds, TestRevoluteJointOutOfBounds)
 {
   planning_interface::MotionPlanRequest request;

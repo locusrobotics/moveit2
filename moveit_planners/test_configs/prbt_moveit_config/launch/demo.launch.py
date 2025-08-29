@@ -82,6 +82,7 @@ def generate_launch_description():
         "planning_pipelines": ["pilz", "ompl"],
         "pilz": {
             "planning_plugins": ["pilz_industrial_motion_planner/CommandPlanner"],
+            "start_state_max_bounds_error": 0.01,
         },
         "ompl": {
             "planning_plugins": ["ompl_interface/OMPLPlanner"],
@@ -95,6 +96,7 @@ def generate_launch_description():
                 "default_planning_response_adapters/AddTimeOptimalParameterization",
                 "default_planning_response_adapters/ValidateSolution",
             ],
+            "start_state_max_bounds_error": 0.01,
         },
     }
     ompl_planning_yaml = load_yaml(
