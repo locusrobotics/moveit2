@@ -1235,6 +1235,7 @@ void TrajectoryExecutionManager::stopExecution(bool auto_clear)
 
       if (auto_clear)
         clear();
+      RCLCPP_WARN(logger_, "Finished joining thread and clear!!");
     }
     else
       execution_state_mutex_.unlock();
@@ -1249,6 +1250,7 @@ void TrajectoryExecutionManager::stopExecution(bool auto_clear)
       execution_thread_.reset();
     }
   }
+  RCLCPP_WARN(logger_, "Return from stopExecution");
 }
 
 void TrajectoryExecutionManager::execute(const ExecutionCompleteCallback& callback, bool auto_clear)
@@ -1329,6 +1331,7 @@ void TrajectoryExecutionManager::executeThread(const ExecutionCompleteCallback& 
   // execute each trajectory, one after the other (executePart() is blocking) or until one fails.
   // on failure, the status is set by executePart(). Otherwise, it will remain as set above (success)
   std::size_t i = 0;
+  RCLCPP_INFO(logger_, "Executing num parts: %d", trajectories_.size());
   for (; i < trajectories_.size(); ++i)
   {
     bool epart = executePart(i);
@@ -1341,6 +1344,8 @@ void TrajectoryExecutionManager::executeThread(const ExecutionCompleteCallback& 
     }
   }
 
+  RCLCPP_INFO(logger_, "Finished executing parts!");
+
   // only report that execution finished successfully when the robot actually stopped moving
   if (last_execution_status_ == moveit_controller_manager::ExecutionStatus::SUCCEEDED)
   {
@@ -1349,6 +1354,7 @@ void TrajectoryExecutionManager::executeThread(const ExecutionCompleteCallback& 
     {
       waitForRobotToStop(*trajectories_[i - 1]);
     }
+    RCLCPP_INFO(logger_, "Finished wait for stop");
   }
 
   RCLCPP_INFO(logger_, "Completed trajectory execution with status %s ...", last_execution_status_.asString().c_str());
@@ -1359,6 +1365,8 @@ void TrajectoryExecutionManager::executeThread(const ExecutionCompleteCallback& 
   execution_state_mutex_.unlock();
   execution_complete_condition_.notify_all();
 
+  RCLCPP_INFO(logger_, "Notified trajectoyr completion");
+
   // clear the paths just executed, if needed
   if (auto_clear)
     clear();
@@ -1366,6 +1374,7 @@ void TrajectoryExecutionManager::executeThread(const ExecutionCompleteCallback& 
   // call user-specified callback
   if (callback)
     callback(last_execution_status_);
+  RCLCPP_INFO(logger_, "Return from executeThread.");
 }
 
 bool TrajectoryExecutionManager::executePart(std::size_t part_index)
