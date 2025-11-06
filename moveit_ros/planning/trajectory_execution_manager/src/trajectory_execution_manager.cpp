@@ -1192,6 +1192,7 @@ moveit_controller_manager::ExecutionStatus TrajectoryExecutionManager::executeAn
 
 void TrajectoryExecutionManager::stopExecutionInternal()
 {
+  RCLCPP_WARN(logger_, "Starting stopExecutionInternal.");
   // execution_state_mutex_ needs to have been locked by the caller
   for (moveit_controller_manager::MoveItControllerHandlePtr& active_handle : active_handles_)
   {
@@ -1204,6 +1205,7 @@ void TrajectoryExecutionManager::stopExecutionInternal()
       RCLCPP_ERROR(logger_, "Caught %s when canceling execution.", ex.what());
     }
   }
+  RCLCPP_WARN(logger_, "Returning from stopExecutionInternal.");
 }
 
 void TrajectoryExecutionManager::stopExecution(bool auto_clear)
@@ -1334,6 +1336,7 @@ void TrajectoryExecutionManager::executeThread(const ExecutionCompleteCallback& 
   RCLCPP_INFO(logger_, "Executing num parts: %d", trajectories_.size());
   for (; i < trajectories_.size(); ++i)
   {
+    RCLCPP_WARN(logger_, "Executing part index: %d.", i);
     bool epart = executePart(i);
     if (epart && part_callback)
       part_callback(i);
@@ -1571,6 +1574,7 @@ bool TrajectoryExecutionManager::executePart(std::size_t part_index)
       // if something made the trajectory stop, we stop this thread too
       if (execution_complete_)
       {
+        RCLCPP_WARN(logger_, "Stopping this thread too!!!!");
         result = false;
         break;
       }
@@ -1594,6 +1598,8 @@ bool TrajectoryExecutionManager::executePart(std::size_t part_index)
     time_index_mutex_.unlock();
 
     execution_state_mutex_.unlock();
+
+    RCLCPP_WARN(logger_, "Returning result from Execute Parts!");
     return result;
   }
   else
