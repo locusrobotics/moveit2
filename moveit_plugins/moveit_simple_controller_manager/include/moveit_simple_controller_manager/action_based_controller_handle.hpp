@@ -134,6 +134,7 @@ public:
         });
     if (timeout < std::chrono::nanoseconds(0))
     {
+      RCLCPP_WARN(logger_, "Waiting for execution indefinitely");
       result_future.wait();
     }
     else
