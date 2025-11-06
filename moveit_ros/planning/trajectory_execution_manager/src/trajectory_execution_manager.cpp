@@ -1547,6 +1547,7 @@ bool TrajectoryExecutionManager::executePart(std::size_t part_index)
     bool result = true;
     for (moveit_controller_manager::MoveItControllerHandlePtr& handle : handles)
     {
+      RCLCPP_WARN(logger_, "Wait For Execution Started!!!!");
       if (execution_duration_monitoring_)
       {
         if (!handle->waitForExecution(expected_trajectory_duration))
@@ -1570,7 +1571,9 @@ bool TrajectoryExecutionManager::executePart(std::size_t part_index)
       }
       else
         handle->waitForExecution();
+      RCLCPP_WARN(logger_, "Wait For Execution Finished!!!!");
 
+      RCLCPP_WARN(logger_, "Execution Complete is: %d", execution_complete_);
       // if something made the trajectory stop, we stop this thread too
       if (execution_complete_)
       {
@@ -1589,15 +1592,19 @@ bool TrajectoryExecutionManager::executePart(std::size_t part_index)
 
     // clear the active handles
     execution_state_mutex_.lock();
+    RCLCPP_WARN(logger_, "Locking Execution State Mutex !!!!");
     active_handles_.clear();
 
     // clear the time index
     time_index_mutex_.lock();
+    RCLCPP_WARN(logger_, "Locking Time Index Mutex !!!!");
     time_index_.clear();
     current_context_ = -1;
     time_index_mutex_.unlock();
+    RCLCPP_WARN(logger_, "Unlock Time Index Mutex !!!!");
 
     execution_state_mutex_.unlock();
+    RCLCPP_WARN(logger_, "Unlock Execution State Mutex !!!!");
 
     RCLCPP_WARN(logger_, "Returning result from Execute Parts!");
     return result;
