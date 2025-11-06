@@ -1573,7 +1573,7 @@ bool TrajectoryExecutionManager::executePart(std::size_t part_index)
         handle->waitForExecution();
       RCLCPP_WARN(logger_, "Wait For Execution Finished!!!!");
 
-      RCLCPP_WARN(logger_, "Execution Complete is: %d", execution_complete_);
+      RCLCPP_WARN(logger_, "Execution Complete is: %d", execution_complete_.load());
       // if something made the trajectory stop, we stop this thread too
       if (execution_complete_)
       {
